@@ -1,0 +1,6 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/history/page": "app/admin/history/page.js",
+  "/admin/drivers-stats/page": "app/admin/drivers-stats/page.js"
+}
