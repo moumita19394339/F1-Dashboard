@@ -30,8 +30,8 @@ const navItems: NavItem[] = [
   // Analytics Section
   { title: "Overview", href: "/admin", icon: LayoutDashboard, section: "Analytics" },
   { title: "History", href: "/admin/history", icon: History, section: "Analytics" },
-  // { title: "Driver Stats", href: "/admin/drivers-stats", icon: BarChart3, section: "Analytics" },
-  // { title: "All Drivers", href: "/admin/all-drivers", icon: UserCircle, section: "Analytics" },
+  { title: "Driver Stats", href: "/admin/drivers-stats", icon: BarChart3, section: "Analytics" },
+  { title: "All Drivers", href: "/admin/all-drivers", icon: UserCircle, section: "Analytics" },
 
   // Data Management Section
   { title: "Manage Seasons", href: "/admin/seasons", icon: Trophy, section: "Management" },
