@@ -34,10 +34,71 @@ Or use the convenience targets added to the repo:
 make run    # creates venv (if missing), installs deps, and runs src/app.py
 ./run.sh    # same as above, executable script
 
-What the backend does:
+**Backend (src)**
 
-- Loads `data/raw/processed/f1_Final_Data.csv` using `pandas`.
-- Prints "Data loaded successfully." and shows the DataFrame head and dtypes.
+The backend is responsible for loading, filtering, and aggregating Formula 1 race data to support the dashboard visualisations.
+
+- `src/app.py`  
+  Entry point used for testing backend functionality. It loads the dataset and verifies that the backend pipeline works correctly.
+
+- `src/dataLoader.py`  
+  Contains `load_data()` which reads `data/raw/processed/f1_Final_Data.csv` and returns a pandas DataFrame.
+
+- `src/dataFilter.py`  
+  Implements dynamic filtering logic based on user selections in the dashboard (season, driver, and constructor).
+
+- `src/dataAggregation.py`  
+  Performs backend aggregation to compute driver performance statistics such as total races, wins, podiums, points, and average finishing position for comparison visualisations.
+
+## Backend Data Processing Pipeline
+
+The backend follows a simple modular pipeline to prepare data for the dashboard:
+
+Dataset → Filtering → Aggregation → Dashboard Visualisations
+
+1. **Data Loading**  
+   The dataset is loaded from `data/raw/processed/f1_Final_Data.csv` using pandas.
+
+2. **Data Filtering**  
+   The dataset can be dynamically filtered based on:
+   - Season
+   - Driver
+   - Constructor
+
+3. **Data Aggregation**  
+   Aggregated statistics are calculated per driver to enable comparative analysis in the dashboard.
+
+Metrics currently calculated include:
+- Total races
+- Total points
+- Wins
+- Podium finishes
+- Average finishing position
+- Best grid position
+
+
+What the backend does:
+- Loads the processed Formula 1 dataset using `pandas`.
+- Provides filtering functionality based on season, driver, and constructor selections.
+- Computes aggregated driver statistics used for comparison visualisations in the dashboard.
+- Supplies processed data to the frontend dashboard for interactive exploration.
+
+## Backend Project Structure
+
+F1-Dashboard
+│
+├── data
+│   └── raw/processed/f1_Final_Data.csv
+│
+├── src
+│   ├── app.py
+│   ├── dataLoader.py
+│   ├── dataFilter.py
+│   └── dataAggregation.py
+│
+├── requirements.txt
+├── Makefile
+└── README.md
 
 Notes:
 
