@@ -15,7 +15,7 @@ import {
   Legend,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
-import type { AgeDistributionData } from '@/lib/api'
+interface AgeDistributionData { age_bucket: string; driver_count: number; avg_debut_age?: number }
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 

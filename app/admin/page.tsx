@@ -5,11 +5,11 @@ import {
   useDashboardStats,
   useWinsOverTime,
   useWinsByTeam,
-  useSpeedByCircuit,
+  useSeasons,
+  useYearsRange,
 } from "@/lib/hooks/useF1Data";
 import { WinsOverTime } from "@/components/dashboard/WinsOverTime";
 import { WinsByTeam } from "@/components/dashboard/WinsByTeam";
-import { SpeedByCircuit } from "@/components/dashboard/SpeedByCircuit";
 import {
   Card,
   CardContent,
@@ -19,134 +19,96 @@ import {
   Select,
   Skeleton,
 } from "@/components/ui";
-import { Trophy, TrendingUp, Award, Zap, Percent } from "lucide-react";
+import { Trophy, TrendingUp, Award, Hash } from "lucide-react";
+import { PageHero } from "@/components/layout/PageHero";
 
 export default function AdminDashboardPage() {
   const [selectedSeason, setSelectedSeason] = useState<number | "All">("All");
   const seasonParam = selectedSeason === "All" ? undefined : selectedSeason;
 
-  const { data: summary, isLoading: summaryLoading } =
-    useDashboardStats(seasonParam);
-  const { data: winsOverTime, isLoading: winsOverTimeLoading } =
-    useWinsOverTime(2020, 2024, seasonParam);
-  const { data: winsByTeam, isLoading: winsByTeamLoading } =
-    useWinsByTeam(seasonParam);
-  const { data: speedByCircuit, isLoading: speedByCircuitLoading } =
-    useSpeedByCircuit(seasonParam);
+  const { data: yearsRange } = useYearsRange();
+  const minYear = yearsRange?.min_year ?? 1950;
+  const maxYear = yearsRange?.max_year ?? 2030;
+
+  const { data: seasons } = useSeasons(minYear, maxYear);
+  const { data: summary, isLoading: summaryLoading } = useDashboardStats(seasonParam);
+  const { data: winsOverTime, isLoading: winsOverTimeLoading } = useWinsOverTime(minYear, maxYear);
+  const { data: winsByTeam, isLoading: winsByTeamLoading } = useWinsByTeam(seasonParam);
 
   const metrics = [
-    {
-      title: "Total Wins",
-      value: summary?.total_wins || 0,
-      icon: Trophy,
-      color: "text-primary-600",
-      bgColor: "bg-primary-50",
-    },
-    {
-      title: "Total Podiums",
-      value: summary?.total_podiums || 0,
-      icon: Award,
-      color: "text-warning-600",
-      bgColor: "bg-warning-50",
-    },
+    { title: "Total Wins", value: summary?.total_wins ?? 0, icon: Trophy, accentColor: '#E10600', glowColor: 'rgba(225,6,0,0.08)' },
+    { title: "Total Podiums", value: summary?.total_podiums ?? 0, icon: Award, accentColor: '#F59E0B', glowColor: 'rgba(245,158,11,0.08)' },
     {
       title: "Avg Points",
-      value: summary?.average_points.toFixed(1) || "0.0",
+      value: summary?.average_points != null ? summary.average_points.toFixed(1) : "0.0",
       icon: TrendingUp,
-      color: "text-info-600",
-      bgColor: "bg-info-50",
+      accentColor: '#00D4FF',
+      glowColor: 'rgba(0,212,255,0.08)',
     },
-    {
-      title: "Avg Speed",
-      value: `${summary?.average_speed.toFixed(1) || "0.0"} km/h`,
-      icon: Zap,
-      color: "text-success-600",
-      bgColor: "bg-success-50",
-    },
-    {
-      title: "Win Rate",
-      value: `${summary?.win_percentage.toFixed(1) || "0.0"}%`,
-      icon: Percent,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-    },
+    { title: "Total Races", value: summary?.total_races ?? 0, icon: Hash, accentColor: '#22C55E', glowColor: 'rgba(34,197,94,0.08)' },
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 bg-white rounded-xl border border-neutral-200 shadow-lg">
-        <div>
-          <h1 className="text-3xl font-bold text-neutral-900">
-            Dashboard Overview
-          </h1>
-          <p className="text-lg text-neutral-600 mt-1">
-            F1 Team Championship (2020-2024)
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <label className="text-sm font-bold text-neutral-800">Season:</label>
-          <Select
-            value={String(selectedSeason)}
-            onChange={(e) =>
-              setSelectedSeason(
-                e.target.value === "All" ? "All" : parseInt(e.target.value),
-              )
-            }
-            className="w-40"
-          >
-            <option value="All">All Seasons</option>
-            <option value="2024">2024</option>
-            <option value="2023">2023</option>
-            <option value="2022">2022</option>
-            <option value="2021">2021</option>
-            <option value="2020">2020</option>
-          </Select>
-        </div>
-      </div>
+      <PageHero
+        title="Championship Data"
+        subtitle={`F1 Constructor Championship ${minYear}–${maxYear}`}
+        badge="Analytics"
+        imageSrc="/images/f1/f1-race-start.jpg"
+        imageAlt="F1 race start"
+      >
+        <label className="hud-label text-white/70">Season:</label>
+        <Select
+          value={String(selectedSeason)}
+          onChange={(e) =>
+            setSelectedSeason(e.target.value === "All" ? "All" : parseInt(e.target.value))
+          }
+          className="w-36"
+        >
+          <option value="All">All Seasons</option>
+          {seasons
+            ? [...seasons].reverse().map((s) => (
+                <option key={s.year} value={s.year}>{s.year}</option>
+              ))
+            : null}
+        </Select>
+      </PageHero>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {metrics.map((metric, index) => {
           const Icon = metric.icon;
           return (
-            <Card
+            <div
               key={index}
-              className="hover:shadow-xl hover:border-primary-200 transition-all duration-300 group"
+              className={`metric-card group animate-reveal-up stagger-${index + 1}`}
             >
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div
-                    className={`h-12 w-12 rounded-xl ${metric.bgColor} flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow`}
-                  >
-                    <Icon className={`h-6 w-6 ${metric.color}`} />
-                  </div>
+              <div className="flex items-center justify-between mb-4">
+                <p className="metric-label">{metric.title}</p>
+                <div
+                  className="p-1.5 rounded-sm transition-colors"
+                  style={{ backgroundColor: metric.glowColor }}
+                >
+                  <Icon className="h-3.5 w-3.5" style={{ color: metric.accentColor }} />
                 </div>
-                <div>
-                  <p className="text-xs font-bold text-neutral-600 uppercase tracking-wider mb-1">
-                    {metric.title}
-                  </p>
-                  <p className="text-3xl font-bold text-neutral-900">
-                    {metric.value}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+              <p className="metric-value" style={{ color: metric.accentColor }}>{metric.value}</p>
+              <div className="mt-4 h-[2px]" style={{ background: `linear-gradient(to right, ${metric.accentColor}, transparent 60%)` }} />
+            </div>
           );
         })}
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card className="lg:col-span-2 animate-reveal-up stagger-5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary-600" />
+              <TrendingUp className="h-3.5 w-3.5 text-accent" />
               Wins Over Time
             </CardTitle>
-            <CardDescription>
-              Team performance trends across seasons
-            </CardDescription>
+            <CardDescription>Constructor performance trends by season</CardDescription>
           </CardHeader>
           <CardContent>
             {winsOverTimeLoading ? (
@@ -157,10 +119,10 @@ export default function AdminDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="animate-reveal-up stagger-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-warning-600" />
+              <Trophy className="h-3.5 w-3.5" style={{ color: '#F59E0B' }} />
               Wins by Team
             </CardTitle>
             <CardDescription>Total race wins by constructor</CardDescription>
@@ -174,19 +136,40 @@ export default function AdminDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="animate-reveal-up">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5 text-success-600" />
-              Speed by Circuit
+              <Award className="h-3.5 w-3.5" style={{ color: '#00D4FF' }} />
+              Season Summary
             </CardTitle>
-            <CardDescription>Fastest lap speeds by track</CardDescription>
+            <CardDescription>
+              {selectedSeason === "All"
+                ? "Select a season for detailed stats"
+                : `${selectedSeason} season highlights`}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            {speedByCircuitLoading ? (
+            {summaryLoading ? (
               <Skeleton className="h-80 w-full" />
             ) : (
-              <SpeedByCircuit data={speedByCircuit || []} />
+              <div className="grid grid-cols-2 gap-3 py-2">
+                {[
+                  { label: 'Wins', value: summary?.total_wins ?? 0, color: '#E10600' },
+                  { label: 'Podiums', value: summary?.total_podiums ?? 0, color: '#F59E0B' },
+                  { label: 'Races', value: summary?.total_races ?? 0, color: '#22C55E' },
+                  { label: 'Avg Pts', value: summary?.average_points != null ? summary.average_points.toFixed(1) : '0.0', color: '#00D4FF' },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="p-4 rounded-sm relative overflow-hidden"
+                    style={{ backgroundColor: 'var(--color-surface-2)' }}
+                  >
+                    <div className="absolute left-0 top-0 bottom-0 w-[2px]" style={{ backgroundColor: item.color }} />
+                    <p className="hud-label mb-2">{item.label}</p>
+                    <p className="font-display text-xl font-bold tracking-wider" style={{ color: item.color }}>{item.value}</p>
+                  </div>
+                ))}
+              </div>
             )}
           </CardContent>
         </Card>

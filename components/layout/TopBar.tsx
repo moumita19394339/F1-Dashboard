@@ -1,17 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Bell, Menu, LogOut, User, Settings } from "lucide-react";
-import { Avatar } from "@/components/ui";
+import { Search, Bell, Menu, LogOut, User, Settings, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useTheme } from "next-themes";
 
 export interface TopBarProps {
   title?: string;
   onMenuClick?: () => void;
   showMenuButton?: boolean;
   className?: string;
+}
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return <div className="h-8 w-8" />;
+  }
+
+  return (
+    <button
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      className="p-2 rounded-sm border transition-all hover:border-accent hover:text-accent group"
+      style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
+      aria-label="Toggle theme"
+    >
+      {theme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+    </button>
+  );
 }
 
 export function TopBar({
@@ -38,66 +60,75 @@ export function TopBar({
   return (
     <header
       className={cn(
-        "sticky top-0 z-sticky bg-white/95 backdrop-blur-lg border-b border-neutral-200 shadow-sm",
-        "h-16 flex items-center justify-between px-4 lg:px-8",
+        "sticky top-0 z-sticky backdrop-blur-xl border-b",
+        "h-14 flex items-center justify-between px-4 lg:px-8",
         className,
       )}
+      style={{
+        backgroundColor: 'color-mix(in srgb, var(--color-surface-1) 85%, transparent)',
+        borderColor: 'var(--color-border)',
+      }}
     >
       {/* Left section */}
       <div className="flex items-center gap-4">
         {showMenuButton && (
           <button
             onClick={onMenuClick}
-            className="lg:hidden p-2.5 rounded-lg hover:bg-neutral-100 transition-all hover:shadow-sm"
+            className="lg:hidden p-2 rounded-sm border hover:border-accent hover:text-accent transition-all"
+            style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
             aria-label="Toggle menu"
           >
-            <Menu className="h-5 w-5 text-neutral-700" />
+            <Menu className="h-4 w-4" />
           </button>
         )}
         {title && (
-          <h1 className="text-xl font-bold text-neutral-900">{title}</h1>
+          <h1 className="font-display text-xs font-bold tracking-widest uppercase" style={{ color: 'var(--color-text-primary)' }}>{title}</h1>
         )}
+
+        {/* Live indicator */}
+        <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-sm" style={{ backgroundColor: 'var(--color-surface-2)' }}>
+          <div className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-glow-pulse" />
+          <span className="hud-label text-[0.55rem]">System Active</span>
+        </div>
       </div>
 
       {/* Right section */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         {/* Search */}
         <div className="hidden sm:block relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: 'var(--color-text-secondary)' }} />
           <input
             type="search"
             placeholder="Search..."
-            className="pl-10 pr-4 py-2.5 w-72 rounded-lg border border-neutral-300 bg-white text-sm text-neutral-900 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-neutral-400 transition-all shadow-sm"
+            className="input pl-9 pr-4 py-1.5 w-52 text-sm"
           />
         </div>
+
+        <ThemeToggle />
 
         {/* Notifications */}
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2.5 rounded-lg hover:bg-neutral-100 transition-all hover:shadow-sm"
+            className="relative p-2 rounded-sm border transition-all hover:border-accent hover:text-accent"
+            style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
             aria-label="Notifications"
           >
-            <Bell className="h-5 w-5 text-neutral-700" />
-            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-error-500 ring-2 ring-white" />
+            <Bell className="h-3.5 w-3.5" />
           </button>
 
           {showNotifications && (
             <>
+              <div className="fixed inset-0 z-dropdown" onClick={() => setShowNotifications(false)} />
               <div
-                className="fixed inset-0 z-dropdown"
-                onClick={() => setShowNotifications(false)}
-              />
-              <div className="absolute right-0 top-full mt-3 w-80 rounded-xl bg-white shadow-xl border border-neutral-200 z-dropdown animate-fade-in">
-                <div className="p-4 border-b border-neutral-200 bg-gradient-to-r from-neutral-50 to-white">
-                  <h3 className="font-bold text-neutral-900">Notifications</h3>
+                className="absolute right-0 top-full mt-2 w-72 rounded-md border z-dropdown animate-fade-in"
+                style={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-border)' }}
+              >
+                <div className="p-3 border-b" style={{ borderColor: 'var(--color-border)' }}>
+                  <h3 className="hud-label">Notifications</h3>
                 </div>
-                <div className="max-h-96 overflow-y-auto">
-                  <div className="p-4">
-                    <p className="text-sm text-neutral-500 text-center py-8">
-                      No new notifications
-                    </p>
-                  </div>
+                <div className="p-4">
+                  <p className="text-xs text-center py-6 font-mono" style={{ color: 'var(--color-text-secondary)' }}>No notifications</p>
                 </div>
               </div>
             </>
@@ -108,45 +139,53 @@ export function TopBar({
         <div className="relative">
           <button
             onClick={() => setShowProfileMenu(!showProfileMenu)}
-            className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-neutral-100 transition-all hover:shadow-sm"
+            className="flex items-center gap-2 p-1 rounded-sm border hover:border-accent transition-all"
+            style={{ borderColor: 'var(--color-border)' }}
             aria-label="Profile menu"
           >
-            <Avatar
-              size="sm"
-              src=""
-              alt={user?.full_name || user?.email || "User"}
-              fallback={user?.email?.substring(0, 2).toUpperCase() || "U"}
-            />
+            <div
+              className="h-6 w-6 rounded-sm flex items-center justify-center text-white text-[0.55rem] font-bold font-mono bg-gradient-to-br from-[#E10600] to-[#B30500]"
+            >
+              {user?.email?.substring(0, 2).toUpperCase() || "U"}
+            </div>
           </button>
 
           {showProfileMenu && (
             <>
+              <div className="fixed inset-0 z-dropdown" onClick={() => setShowProfileMenu(false)} />
               <div
-                className="fixed inset-0 z-dropdown"
-                onClick={() => setShowProfileMenu(false)}
-              />
-              <div className="absolute right-0 top-full mt-2 w-56 rounded-lg bg-white shadow-lg border border-neutral-200 z-dropdown animate-fade-in">
-                <div className="p-4 border-b border-neutral-200">
-                  <p className="text-sm font-medium text-neutral-900">
+                className="absolute right-0 top-full mt-2 w-52 rounded-md border z-dropdown animate-fade-in"
+                style={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-border)' }}
+              >
+                <div className="p-3 border-b" style={{ borderColor: 'var(--color-border)' }}>
+                  <p className="text-xs font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>
                     {user?.full_name || user?.username || 'User'}
                   </p>
-                  <p className="text-xs text-neutral-500">{user?.email || 'No email'}</p>
+                  <p className="hud-label truncate text-[0.55rem] mt-0.5">
+                    {user?.email || 'No email'}
+                  </p>
                 </div>
-                <div className="py-2">
-                  <button className="flex items-center gap-2 w-full px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors text-left">
-                    <User className="h-4 w-4" />
+                <div className="py-1">
+                  <button
+                    className="flex items-center gap-2 w-full px-3 py-2 text-xs transition-colors text-left hover:bg-surface-3"
+                    style={{ color: 'var(--color-text-secondary)' }}
+                  >
+                    <User className="h-3.5 w-3.5" />
                     Profile
                   </button>
-                  <button className="flex items-center gap-2 w-full px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors text-left">
-                    <Settings className="h-4 w-4" />
+                  <button
+                    className="flex items-center gap-2 w-full px-3 py-2 text-xs transition-colors text-left hover:bg-surface-3"
+                    style={{ color: 'var(--color-text-secondary)' }}
+                  >
+                    <Settings className="h-3.5 w-3.5" />
                     Settings
                   </button>
-                  <div className="border-t border-neutral-200 my-2" />
+                  <div className="border-t my-1" style={{ borderColor: 'var(--color-border)' }} />
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-error-600 hover:bg-error-50 transition-colors text-left"
+                    className="flex items-center gap-2 w-full px-3 py-2 text-xs text-accent hover:bg-[rgba(225,6,0,0.08)] transition-colors text-left"
                   >
-                    <LogOut className="h-4 w-4" />
+                    <LogOut className="h-3.5 w-3.5" />
                     Sign out
                   </button>
                 </div>

@@ -17,7 +17,7 @@ import {
   Filler,
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
-import type { DriverSeasonData } from '@/lib/api'
+interface DriverSeasonData { year: number; team?: string; team_name?: string; team_color?: string; races: number; wins: number; podiums: number; points: number; position?: number }
 
 ChartJS.register(
   CategoryScale,

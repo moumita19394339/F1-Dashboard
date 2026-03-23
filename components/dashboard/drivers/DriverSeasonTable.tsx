@@ -6,7 +6,7 @@
 'use client'
 
 import { Table } from '@/components/data/Table'
-import type { DriverSeasonData } from '@/lib/api'
+interface DriverSeasonData { year: number; team?: string; team_name?: string; team_color?: string; races: number; wins: number; podiums: number; pole_positions?: number; fastest_laps?: number; points: number; position?: number }
 
 interface DriverSeasonTableProps {
   data: DriverSeasonData[]

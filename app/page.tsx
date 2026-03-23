@@ -19,10 +19,10 @@ export default function HomePage() {
   }, [router])
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg)' }}>
       <div className="flex items-center gap-3">
-        <Activity className="h-8 w-8 animate-spin text-primary-600" />
-        <span className="text-neutral-600 text-lg">Loading...</span>
+        <Activity className="h-8 w-8 animate-spin text-accent" />
+        <span className="text-lg" style={{ color: 'var(--color-text-secondary)' }}>Loading...</span>
       </div>
     </div>
   )

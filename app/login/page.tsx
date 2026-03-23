@@ -2,18 +2,32 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Mail, Lock, AlertCircle } from "lucide-react";
+import { Mail, Lock, AlertCircle, Zap, ChevronRight } from "lucide-react";
 import { useAuth } from "@/lib/hooks/useAuth";
-import {
-  Button,
-  Input,
-  Label,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui";
+
+const F1_PHOTOS = [
+  {
+    src: "/images/f1/f1-race-start.jpg",
+    label: "Race Start",
+    sublabel: "Grid Formation",
+  },
+  {
+    src: "/images/f1/f1-cockpit.jpg",
+    label: "Cockpit",
+    sublabel: "Driver's View",
+  },
+  {
+    src: "/images/f1/f1-car-detail.jpg",
+    label: "Car Detail",
+    sublabel: "Engineering",
+  },
+  {
+    src: "/images/f1/f1-close-up.jpg",
+    label: "Close Up",
+    sublabel: "Race Action",
+  },
+];
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,6 +36,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [activePhoto, setActivePhoto] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,194 +57,272 @@ export default function LoginPage() {
   const displayLoading = isLoading || authLoading;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-neutral-100/50 to-neutral-50 flex flex-col">
-      {/* Header */}
-      <div className="border-b border-neutral-200 bg-white/95 backdrop-blur-lg shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary-600 to-primary-700 text-white shadow-lg">
-                <Trophy className="h-6 w-6" />
-              </div>
-              <span className="text-xl font-bold text-neutral-900">
-                F1 Data Dashboard
-              </span>
+    <div
+      className="min-h-screen flex"
+      style={{ backgroundColor: "var(--color-bg)" }}
+    >
+      {/* ── Left — form ────────────────────────────────── */}
+      <div className="flex-1 flex items-center justify-center p-8 animate-slide-in-left">
+        <div className="w-full max-w-md">
+          {/* Logo */}
+          <div className="flex items-center gap-3 mb-12">
+            <div className="relative flex h-11 w-11 items-center justify-center rounded-sm bg-gradient-to-br from-[#E10600] to-[#B30500] text-white shadow-lg shadow-[rgba(225,6,0,0.3)]">
+              <Zap className="h-5 w-5" />
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main content */}
-      <div className="flex-1 flex">
-        <div className="flex-1 flex items-center justify-center p-8">
-          <div className="w-full max-w-md animate-fade-in">
-            {/* Welcome message */}
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-                Welcome back
-              </h1>
-              <p className="text-lg text-neutral-600">
-                Sign in to your account to continue
+            <div>
+              <p
+                className="font-display font-bold text-xs tracking-[0.2em]"
+                style={{ color: "var(--color-text-primary)" }}
+              >
+                F1 DATA
+              </p>
+              <p className="hud-label text-[0.55rem] mt-0.5 opacity-60">
+                Race Control System
               </p>
             </div>
+          </div>
 
-            {/* Login form */}
-            <Card className="shadow-xl">
-              <CardHeader className="space-y-1 bg-gradient-to-r from-neutral-50 to-white border-b border-neutral-200">
-                <CardTitle className="text-2xl">Sign in</CardTitle>
-                <CardDescription className="text-base">
-                  Enter your email and password to access your dashboard
-                </CardDescription>
-              </CardHeader>
-              <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500 z-10 pointer-events-none" />
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="name@example.com"
-                      className="pl-11 h-12 text-base"
-                      required
-                      autoComplete="email"
-                    />
+          {/* Header */}
+          <div className="mb-8">
+            <p
+              className="hud-label mb-3"
+              style={{ color: "var(--color-accent)" }}
+            >
+              // Secure Access
+            </p>
+            <h1
+              className="font-display text-3xl font-bold leading-none tracking-wide mb-3"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              SIGN IN
+            </h1>
+            <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
+              Enter your credentials to access race control
+            </p>
+          </div>
+
+          {/* Form card */}
+          <div
+            className="rounded-md border p-6 relative overflow-hidden"
+            style={{
+              backgroundColor: "var(--color-surface-1)",
+              borderColor: "var(--color-border)",
+            }}
+          >
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#E10600] via-[#E10600] to-transparent" />
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-2 animate-reveal-up stagger-1">
+                <label className="label" htmlFor="email">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"
+                    style={{ color: "var(--color-text-secondary)" }}
+                  />
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="pilot@team.f1"
+                    className="input pl-10 h-11"
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2 animate-reveal-up stagger-2">
+                <label className="label" htmlFor="password">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"
+                    style={{ color: "var(--color-text-secondary)" }}
+                  />
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="input pl-10 h-11"
+                    required
+                    autoComplete="current-password"
+                  />
+                </div>
+              </div>
+
+              {displayError && (
+                <div
+                  className="flex items-start gap-3 p-3 text-xs rounded-sm border animate-reveal-up"
+                  style={{
+                    backgroundColor: "rgba(225,6,0,0.06)",
+                    borderColor: "rgba(225,6,0,0.25)",
+                    color: "#E10600",
+                  }}
+                >
+                  <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-[0.65rem] uppercase tracking-wider">
+                      Authentication Failed
+                    </p>
+                    <p className="mt-0.5">{displayError}</p>
                   </div>
                 </div>
+              )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500 z-10 pointer-events-none" />
-                    <Input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter your password"
-                      className="pl-11 h-12 text-base"
-                      required
-                      autoComplete="current-password"
-                    />
-                  </div>
-                </div>
-
-                {displayError && (
-                  <div className="flex items-start gap-3 rounded-xl bg-error-50 p-4 text-sm text-error-900 border border-error-200 shadow-sm">
-                    <AlertCircle className="h-5 w-5 flex-shrink-0 text-error-600 mt-0.5" />
-                    <div>
-                      <p className="font-bold">Authentication failed</p>
-                      <p className="mt-1 text-error-800">{displayError}</p>
-                    </div>
-                  </div>
-                )}
-
+              <div className="animate-reveal-up stagger-3">
                 <Button
                   type="submit"
-                  className="w-full h-12 text-base"
+                  className="w-full h-11"
                   isLoading={displayLoading}
                   disabled={displayLoading}
                 >
-                  {displayLoading ? "Signing in..." : "Sign in"}
+                  {displayLoading ? (
+                    "Authenticating..."
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      Access Dashboard
+                      <ChevronRight className="h-4 w-4" />
+                    </span>
+                  )}
                 </Button>
-              </form>
-            </Card>
+              </div>
+            </form>
           </div>
+
+          <p className="mt-6 text-center hud-label text-[0.55rem] opacity-60">
+            F1 Data Systems // 2020–2024
+          </p>
+        </div>
+      </div>
+
+      {/* ── Right — F1 image panel ──────────────────────── */}
+      <div className="hidden lg:flex lg:w-[52%] flex-col relative overflow-hidden animate-slide-in-right">
+
+        {/* Hero background photo */}
+        <div className="absolute inset-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={F1_PHOTOS[activePhoto].src}
+            alt={F1_PHOTOS[activePhoto].label}
+            className="w-full h-full object-cover transition-opacity duration-700"
+          />
+          {/* Dark overlays */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#09090B]/90 via-[#09090B]/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-transparent to-[#09090B]/30" />
         </div>
 
-        {/* Right side - Info panel */}
-        <div className="hidden lg:block lg:w-96 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 p-12 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-          <div className="relative h-full flex flex-col justify-center">
-            <div className="mb-8">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-600 to-primary-700 mb-6 shadow-xl">
-                <Trophy className="h-7 w-7 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold text-white mb-4">
-                Formula 1 Analytics
-              </h2>
-              <p className="text-lg text-neutral-300">
-                Comprehensive dashboard for analyzing F1 team performance,
-                driver statistics, and race data across multiple seasons.
-              </p>
+        {/* Left accent line */}
+        <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-[#E10600] via-[#E10600] to-transparent z-10" />
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col h-full p-14">
+
+          {/* Top badge */}
+          <div className="mb-auto">
+            <div
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm border text-xs font-semibold tracking-wider uppercase"
+              style={{
+                backgroundColor: "rgba(225,6,0,0.12)",
+                borderColor: "rgba(225,6,0,0.3)",
+                color: "#E10600",
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#E10600] animate-pulse" />
+              Live Data
             </div>
+          </div>
 
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-800">
-                  <svg
-                    className="h-5 w-5 text-primary-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-white font-medium">
-                    Performance Metrics
-                  </h3>
-                  <p className="text-sm text-neutral-400 mt-1">
-                    Track wins, podiums, and championship points over time
-                  </p>
-                </div>
-              </div>
+          {/* Main text */}
+          <div className="mb-10">
+            <p
+              className="hud-label mb-4"
+              style={{ color: "var(--color-accent)" }}
+            >
+              // Race Telemetry
+            </p>
+            <h2
+              className="font-display text-5xl font-black leading-tight tracking-wide mb-5"
+              style={{ color: "#FFFFFF" }}
+            >
+              FORMULA 1<br />
+              <span style={{ color: "#E10600" }}>ANALYTICS</span>
+            </h2>
+            <p
+              className="text-sm leading-relaxed max-w-xs"
+              style={{ color: "rgba(255,255,255,0.8)" }}
+            >
+              Championship data from 2020 to 2024. Constructor performance,
+              driver statistics, and circuit analysis.
+            </p>
+          </div>
 
-              <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-800">
-                  <svg
-                    className="h-5 w-5 text-primary-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-white font-medium">Team Comparisons</h3>
-                  <p className="text-sm text-neutral-400 mt-1">
-                    Compare driver and team performance side by side
-                  </p>
-                </div>
+          {/* Stats row */}
+          <div className="flex gap-6 mb-10">
+            {[
+              { value: "5", label: "Seasons" },
+              { value: "10", label: "Teams" },
+              { value: "500+", label: "Races" },
+            ].map((stat) => (
+              <div key={stat.label}>
+                <p
+                  className="font-display text-2xl font-black"
+                  style={{ color: "#FFFFFF" }}
+                >
+                  {stat.value}
+                </p>
+                <p className="text-xs font-medium tracking-wider uppercase mt-0.5" style={{ color: "rgba(255,255,255,0.7)" }}>
+                  {stat.label}
+                </p>
               </div>
+            ))}
+          </div>
 
-              <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-800">
-                  <svg
-                    className="h-5 w-5 text-primary-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-white font-medium">Circuit Analysis</h3>
-                  <p className="text-sm text-neutral-400 mt-1">
-                    Analyze speeds and results by circuit and season
-                  </p>
-                </div>
-              </div>
+          {/* Photo selector strip */}
+          <div>
+            <p className="text-[0.6rem] font-semibold uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.6)" }}>
+              Race Gallery
+            </p>
+            <div className="flex gap-2">
+              {F1_PHOTOS.map((photo, i) => (
+                <button
+                  key={photo.src}
+                  onClick={() => setActivePhoto(i)}
+                  className="group relative flex-1 h-16 rounded-sm overflow-hidden border-2 transition-all duration-200"
+                  style={{
+                    borderColor:
+                      activePhoto === i
+                        ? "#E10600"
+                        : "rgba(255,255,255,0.1)",
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={photo.src}
+                    alt={photo.label}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  />
+                  <div
+                    className="absolute inset-0 transition-opacity duration-200"
+                    style={{
+                      backgroundColor:
+                        activePhoto === i
+                          ? "rgba(225,6,0,0.2)"
+                          : "rgba(0,0,0,0.5)",
+                    }}
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 px-1.5 py-1">
+                    <p className="text-[0.55rem] font-bold uppercase tracking-wider text-white leading-none">
+                      {photo.label}
+                    </p>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         </div>

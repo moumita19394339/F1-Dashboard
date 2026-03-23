@@ -8,12 +8,11 @@
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
-import { Search, X } from 'lucide-react'
+import { X } from 'lucide-react'
 
 export interface DriverFilterValues {
   search: string
   nationality: string
-  is_active: string
   min_wins: string
   sort_by: string
   sort_order: 'asc' | 'desc'
@@ -30,69 +29,44 @@ export function DriverFilters({
   filters,
   nationalities,
   onFilterChange,
-  onReset
+  onReset,
 }: DriverFiltersProps) {
   const handleChange = (key: keyof DriverFilterValues, value: string) => {
     onFilterChange({ ...filters, [key]: value })
   }
 
-  const hasActiveFilters =
-    filters.search ||
-    filters.nationality ||
-    filters.is_active ||
-    filters.min_wins
+  const hasActiveFilters = filters.search || filters.nationality || filters.min_wins
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Search */}
-        <div className="relative">
-          <Input
-            placeholder="Search drivers..."
-            value={filters.search}
-            onChange={(e) => handleChange('search', e.target.value)}
-          />
-        </div>
-
-        {/* Nationality Filter */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Input
+          placeholder="Search drivers..."
+          value={filters.search}
+          onChange={(e) => handleChange('search', e.target.value)}
+        />
         <Select
           value={filters.nationality}
           onChange={(e) => handleChange('nationality', e.target.value)}
         >
           <option value="">All Nationalities</option>
-          {nationalities.map((nationality) => (
-            <option key={nationality} value={nationality}>
-              {nationality}
-            </option>
+          {nationalities.map((n) => (
+            <option key={n} value={n}>{n}</option>
           ))}
         </Select>
-
-        {/* Active/Retired Filter */}
-        <Select
-          value={filters.is_active}
-          onChange={(e) => handleChange('is_active', e.target.value)}
-        >
-          <option value="">All Drivers</option>
-          <option value="true">Active Only</option>
-          <option value="false">Retired Only</option>
-        </Select>
-
-        {/* Minimum Wins Filter */}
         <Select
           value={filters.min_wins}
           onChange={(e) => handleChange('min_wins', e.target.value)}
         >
-          <option value="">All Wins</option>
+          <option value="">All Win Counts</option>
           <option value="1">1+ Wins</option>
           <option value="5">5+ Wins</option>
           <option value="10">10+ Wins</option>
           <option value="20">20+ Wins</option>
-          <option value="50">50+ Wins</option>
         </Select>
       </div>
 
       <div className="flex items-center justify-between">
-        {/* Sort Controls */}
         <div className="flex items-center gap-2">
           <span className="text-sm text-neutral-600">Sort by:</span>
           <Select
@@ -103,8 +77,8 @@ export function DriverFilters({
             <option value="driver_name">Name</option>
             <option value="wins">Wins</option>
             <option value="podiums">Podiums</option>
-            <option value="championships">Championships</option>
-            <option value="debut_year">Debut Year</option>
+            <option value="points">Points</option>
+            <option value="races">Races</option>
           </Select>
           <Select
             value={filters.sort_order}
@@ -116,7 +90,6 @@ export function DriverFilters({
           </Select>
         </div>
 
-        {/* Reset Button */}
         {hasActiveFilters && (
           <Button
             variant="outline"

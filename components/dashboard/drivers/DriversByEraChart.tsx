@@ -15,7 +15,7 @@ import {
   Legend,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
-import type { EraSummaryData } from '@/lib/api'
+interface EraSummaryData { era: string; driver_count: number; total_wins: number; total_podiums?: number; total_championships: number; avg_wins_per_driver?: number; top_drivers?: string[] }
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 

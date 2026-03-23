@@ -89,19 +89,14 @@ export function DashboardHeader({
             icon={Zap}
           />
           <MetricsCard
-            title="Speed"
-            value={summary?.average_speed?.toFixed(2) ?? '211.67'}
-            icon={Gauge}
-          />
-          <MetricsCard
-            title="Win %"
-            value={summary?.win_percentage?.toFixed(2) ?? '0.05'}
-            icon={Percent}
-          />
-          <MetricsCard
             title="Races"
-            value={120}
+            value={summary?.total_races ?? 0}
             icon={Gauge}
+          />
+          <MetricsCard
+            title="Avg Pts"
+            value={summary?.average_points?.toFixed(1) ?? '0.0'}
+            icon={Percent}
           />
         </div>
       </div>
