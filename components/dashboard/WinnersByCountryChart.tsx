@@ -15,7 +15,7 @@ import {
   Legend,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
-import type { CountryWinnerCount } from '@/lib/api'
+interface CountryWinnerCount { country: string; winner_count: number; winners: string[] }
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 

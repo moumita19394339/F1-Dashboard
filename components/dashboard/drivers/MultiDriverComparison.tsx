@@ -8,7 +8,8 @@
 
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
-import type { DriverComparisonData } from '@/lib/api'
+type DriverValue = string | number | boolean | null | undefined;
+interface DriverComparisonData { driver_id: number; driver_name: string; wins: number; podiums: number; championships: number; career_points: number; pole_positions: number; fastest_laps: number; [key: string]: DriverValue }
 import {
   Trophy,
   Award,
@@ -143,7 +144,7 @@ export function MultiDriverComparison({
                     value:
                       driver.career_points !== null &&
                       driver.career_points !== undefined
-                        ? driver.career_points.toFixed(1)
+                        ? Number(driver.career_points).toFixed(1)
                         : '-',
                   },
                   {
@@ -174,7 +175,7 @@ export function MultiDriverComparison({
                     value:
                       driver.distance_led_km !== null &&
                       driver.distance_led_km !== undefined
-                        ? driver.distance_led_km.toFixed(1)
+                        ? Number(driver.distance_led_km).toFixed(1)
                         : '-',
                   },
                   { label: 'Races Led', value: driver.races_led },
@@ -202,7 +203,7 @@ export function MultiDriverComparison({
                   {
                     label: 'Date of Birth',
                     value: driver.dob
-                      ? new Date(driver.dob).toLocaleDateString()
+                      ? new Date(String(driver.dob)).toLocaleDateString()
                       : '-',
                   },
                   { label: 'Birth Place', value: driver.birth_place },
@@ -212,7 +213,7 @@ export function MultiDriverComparison({
                     value:
                       driver.height_cm !== null &&
                       driver.height_cm !== undefined
-                        ? driver.height_cm.toFixed(0)
+                        ? Number(driver.height_cm).toFixed(0)
                         : '-',
                   },
                   {
@@ -220,7 +221,7 @@ export function MultiDriverComparison({
                     value:
                       driver.weight_kg !== null &&
                       driver.weight_kg !== undefined
-                        ? driver.weight_kg.toFixed(0)
+                        ? Number(driver.weight_kg).toFixed(0)
                         : '-',
                   },
                 ]}

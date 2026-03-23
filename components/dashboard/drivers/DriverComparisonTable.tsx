@@ -9,7 +9,8 @@
 import { useState } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import type { DriverComparisonData } from '@/lib/api'
+type DriverValue = string | number | boolean | null | undefined;
+interface DriverComparisonData { driver_id: number; driver_name: string; driver_code?: string; nationality?: string; team?: string; wins: number; podiums: number; championships: number; career_points: number; pole_positions: number; fastest_laps: number; [key: string]: DriverValue }
 
 interface DriverComparisonTableProps {
   driversData: DriverComparisonData[]
@@ -443,10 +444,10 @@ export function DriverComparisonTable({
                       {driver.hat_tricks || 0}
                     </td>
                     <td className="px-3 py-3 text-sm text-center text-neutral-700 bg-green-50/30">
-                      {driver.laps_led?.toLocaleString() || 0}
+                      {Number(driver.laps_led || 0).toLocaleString()}
                     </td>
                     <td className="px-3 py-3 text-sm text-center text-neutral-700 bg-green-50/30">
-                      {driver.distance_led_km?.toFixed(1) || '-'}
+                      {driver.distance_led_km ? Number(driver.distance_led_km).toFixed(1) : '-'}
                     </td>
                     <td className="px-3 py-3 text-sm text-center text-neutral-700 bg-green-50/30">
                       {driver.races_led || 0}
@@ -474,7 +475,7 @@ export function DriverComparisonTable({
                   <>
                     <td className="px-3 py-3 text-sm text-neutral-700 whitespace-nowrap bg-neutral-50/50">
                       {driver.dob
-                        ? new Date(driver.dob).toLocaleDateString()
+                        ? new Date(String(driver.dob)).toLocaleDateString()
                         : '-'}
                     </td>
                     <td className="px-3 py-3 text-sm text-neutral-700 whitespace-nowrap bg-neutral-50/50">
@@ -484,10 +485,10 @@ export function DriverComparisonTable({
                       {driver.birth_country || '-'}
                     </td>
                     <td className="px-3 py-3 text-sm text-center text-neutral-700 bg-neutral-50/50">
-                      {driver.height_cm?.toFixed(0) || '-'}
+                      {driver.height_cm ? Number(driver.height_cm).toFixed(0) : '-'}
                     </td>
                     <td className="px-3 py-3 text-sm text-center text-neutral-700 bg-neutral-50/50">
-                      {driver.weight_kg?.toFixed(0) || '-'}
+                      {driver.weight_kg ? Number(driver.weight_kg).toFixed(0) : '-'}
                     </td>
                   </>
                 )}

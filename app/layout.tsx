@@ -1,9 +1,28 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Barlow, DM_Sans, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/components/Providers'
 
-const inter = Inter({ subsets: ['latin'] })
+const barlow = Barlow({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800', '900'],
+  variable: '--font-orbitron',
+  display: 'swap',
+})
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-dm-sans',
+  display: 'swap',
+})
+
+const jetbrains = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-jetbrains',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'F1 Data Dashboard',
@@ -16,10 +35,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <Providers>
-      <html lang="en">
-        <body className={inter.className}>{children}</body>
-      </html>
-    </Providers>
+    <html
+      lang="en"
+      className={`${barlow.variable} ${dmSans.variable} ${jetbrains.variable}`}
+      suppressHydrationWarning
+    >
+      <body className={dmSans.className}>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
   )
 }

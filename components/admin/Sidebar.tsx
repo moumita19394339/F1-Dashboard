@@ -9,7 +9,7 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/hooks/useAuth'
-import { Trophy, Calendar, Users, Flag, Clock, LogOut, User, LayoutDashboard, UserCircle } from 'lucide-react'
+import { Trophy, Users, Flag, Clock, LogOut, User, LayoutDashboard, UserCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 
@@ -21,7 +21,6 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { name: 'Seasons', href: '/admin/seasons', icon: Calendar },
   { name: 'Teams', href: '/admin/teams', icon: Users },
   { name: 'Drivers', href: '/admin/drivers', icon: Flag },
   { name: 'All Drivers', href: '/admin/all-drivers', icon: UserCircle },

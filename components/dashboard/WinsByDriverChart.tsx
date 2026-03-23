@@ -1,8 +1,3 @@
-/**
- * Wins by Driver Horizontal Bar Chart Component
- * Displays top drivers by total wins
- */
-
 'use client'
 
 import {
@@ -15,6 +10,7 @@ import {
   Legend,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
+import { useTheme } from 'next-themes'
 import type { WinsByDriverData } from '@/lib/api'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
@@ -24,25 +20,36 @@ interface WinsByDriverProps {
   title?: string
 }
 
-export function WinsByDriverChart({ data, title = 'Top Drivers by Wins' }: WinsByDriverProps) {
-  // Sort data by wins (descending)
+function useChartTheme() {
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === 'dark'
+  return {
+    textColor: isDark ? '#71717A' : '#71717A',
+    textColorPrimary: isDark ? '#EDEDEF' : '#09090B',
+    gridColor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)',
+    tooltipBg: isDark ? '#0F0F12' : '#FFFFFF',
+    tooltipTitle: isDark ? '#EDEDEF' : '#09090B',
+    tooltipBorder: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
+    borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)',
+    fontFamily: "'JetBrains Mono', monospace",
+    resolvedTheme,
+  }
+}
+
+export function WinsByDriverChart({ data, title }: WinsByDriverProps) {
+  const theme = useChartTheme()
   const sortedData = [...data].sort((a, b) => b.wins - a.wins)
 
   const chartData = {
-    labels: sortedData.map((item) => {
-      if (item.driver_code) {
-        return `${item.driver_name} (${item.driver_code})`
-      }
-      return item.driver_name
-    }),
+    labels: sortedData.map((item) => item.driver_name),
     datasets: [
       {
         label: 'Wins',
         data: sortedData.map((item) => item.wins),
-        backgroundColor: '#E10600',
+        backgroundColor: '#E10600CC',
         borderColor: '#E10600',
         borderWidth: 1,
-        borderRadius: 4,
+        borderRadius: 2,
       },
     ],
   }
@@ -52,68 +59,51 @@ export function WinsByDriverChart({ data, title = 'Top Drivers by Wins' }: WinsB
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        display: false,
-      },
-      title: {
-        display: true,
-        text: title,
-        color: '#333333',
-        font: {
-          size: 16,
-          weight: 'bold' as const,
-        },
-      },
+      legend: { display: false },
+      title: { display: false },
       tooltip: {
-        backgroundColor: '#FFFFFF',
-        titleColor: '#333333',
-        bodyColor: '#333333',
-        borderColor: '#E10600',
-        borderWidth: 2,
+        backgroundColor: theme.tooltipBg,
+        titleColor: theme.tooltipTitle,
+        bodyColor: theme.textColor,
+        borderColor: theme.tooltipBorder,
+        borderWidth: 1,
+        padding: 12,
+        titleFont: { family: theme.fontFamily, size: 10 },
+        bodyFont: { family: theme.fontFamily, size: 10 },
+        cornerRadius: 3,
         callbacks: {
-          label: (context: any) => {
-            return `Wins: ${context.raw}`
-          },
+          label: (context: any) => `Wins: ${context.raw}`,
           afterLabel: (context: any) => {
             const item = sortedData[context.dataIndex]
-            if (item.team) {
-              return `Team: ${item.team}`
-            }
-            return ''
+            return item.team ? `Team: ${item.team}` : ''
           },
         },
       },
     },
     scales: {
       x: {
+        ticks: { color: theme.textColor, stepSize: 1, font: { family: theme.fontFamily, size: 10 } },
+        grid: { color: theme.gridColor },
+        border: { color: theme.borderColor },
         title: {
           display: true,
           text: 'Number of Wins',
-          color: '#666666',
-        },
-        ticks: {
-          color: '#666666',
-          stepSize: 1,
-        },
-        grid: {
-          color: '#E5E7EB',
+          color: theme.textColor,
+          font: { family: theme.fontFamily, size: 9 },
         },
         min: 0,
       },
       y: {
-        ticks: {
-          color: '#333333',
-        },
-        grid: {
-          display: false,
-        },
+        ticks: { color: theme.textColorPrimary, font: { family: theme.fontFamily, size: 9 } },
+        grid: { display: false },
+        border: { color: theme.borderColor },
       },
     },
   }
 
   return (
     <div className="h-80 w-full">
-      <Bar data={chartData} options={options} />
+      <Bar key={theme.resolvedTheme} data={chartData} options={options} />
     </div>
   )
 }

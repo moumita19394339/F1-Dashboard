@@ -24,9 +24,9 @@ const Badge = forwardRef<HTMLDivElement, BadgeProps>(
             'badge-success': finalVariant === 'success',
             'badge-warning': finalVariant === 'warning',
             'badge-error': finalVariant === 'error',
-            'text-xs': size === 'sm',
-            'text-sm': size === 'md',
-            'text-base': size === 'lg',
+            'text-[0.65rem]': size === 'sm',
+            'text-xs': size === 'md',
+            'text-sm': size === 'lg',
           },
           className
         )}

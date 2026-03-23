@@ -1,0 +1,1 @@
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,18566,(o,t,e)=>{t.exports=o.r(76562)},31713,o=>{"use strict";o.i(43476),o.i(71645),o.i(18566),o.i(15760);let t=Error("Cannot find module 'lucide-react'");throw t.code="MODULE_NOT_FOUND",t}]);

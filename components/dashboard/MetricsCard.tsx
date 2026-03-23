@@ -1,8 +1,3 @@
-/**
- * Metric Card Component
- * Displays a single metric with icon and value
- */
-
 "use client";
 
 import { LucideIcon } from "lucide-react";
@@ -12,23 +7,19 @@ interface MetricsCardProps {
   value: string | number;
   icon: LucideIcon;
   color?: string;
-  bgColor?: string;
 }
 
 export function MetricsCard({
   title,
   value,
   icon: Icon,
-  color = "text-primary-600",
-  bgColor = "bg-primary-50",
+  color = "text-accent",
 }: MetricsCardProps) {
   return (
-    <div className="metric-card group">
+    <div className="metric-card group animate-reveal-up">
       <div className="flex items-start justify-between mb-4">
-        <div
-          className={`h-12 w-12 rounded-xl ${bgColor} flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow`}
-        >
-          <Icon className={`h-6 w-6 ${color}`} />
+        <div className="h-9 w-9 rounded-sm flex items-center justify-center" style={{ backgroundColor: 'var(--color-surface-3)' }}>
+          <Icon className={`h-4 w-4 ${color}`} />
         </div>
       </div>
       <div>

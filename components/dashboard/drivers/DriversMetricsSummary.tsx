@@ -42,28 +42,28 @@ export function DriversMetricsSummary({
         value={totalDrivers}
         icon={Users}
         color="text-blue-600"
-        bgColor="bg-blue-50"
+       
       />
       <MetricsCard
         title="Active Drivers"
         value={activeDrivers}
         icon={TrendingUp}
         color="text-green-600"
-        bgColor="bg-green-50"
+       
       />
       <MetricsCard
         title="Total Wins"
         value={totalWins}
         icon={Trophy}
         color="text-red-600"
-        bgColor="bg-red-50"
+       
       />
       <MetricsCard
         title="Championships"
         value={totalChampionships}
         icon={Award}
         color="text-yellow-600"
-        bgColor="bg-yellow-50"
+       
       />
     </div>
   )

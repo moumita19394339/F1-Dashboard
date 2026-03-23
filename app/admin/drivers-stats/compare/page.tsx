@@ -1,210 +1,200 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  useDrivers,
-  useDriversComparison,
-} from "@/lib/hooks/useF1Data";
-import {
-  DriverSelector,
-  MultiDriverComparison,
-  DriverComparisonTable,
-} from "@/components/dashboard/drivers";
+import { useState, useMemo } from "react";
+import { useDrivers } from "@/lib/hooks/useF1Data";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-  Button,
-  Select,
-  Skeleton,
+  SearchableSelect,
 } from "@/components/ui";
-import { EmptyState } from "@/components/data/EmptyState";
-import { Users, BarChart3, Grid3x3, Info } from "lucide-react";
+import { Users, X } from "lucide-react";
+import { PageHero } from "@/components/layout/PageHero";
+import type { DriverStats } from "@/lib/api/types";
 
 export default function DriverComparePage() {
-  const [selectedSeason, setSelectedSeason] = useState<number | "All">("All");
-  const [selectedDriverIds, setSelectedDriverIds] = useState<number[]>([]);
-  const [comparisonMode, setComparisonMode] = useState<'cards' | 'table'>('cards');
+  const [selectedDriverNames, setSelectedDriverNames] = useState<string[]>([]);
 
-  const seasonParam = selectedSeason === "All" ? undefined : selectedSeason;
+  const { data: driversData } = useDrivers({ page_size: 200, sort_by: "wins", sort_order: "desc" });
+  const drivers = driversData?.drivers || [];
 
-  // Fetch all drivers for selection
-  const { data: driversData, isLoading: driversLoading } = useDrivers();
-
-  // Fetch comparison data when drivers are selected
-  const {
-    data: comparisonData,
-    isLoading: comparisonLoading,
-    refetch: refetchComparison,
-  } = useDriversComparison(
-    selectedDriverIds.length >= 2 ? selectedDriverIds : undefined,
-    seasonParam
+  const selectedDrivers = useMemo(
+    () => drivers.filter(d => selectedDriverNames.includes(d.driver_name)),
+    [drivers, selectedDriverNames]
   );
 
-  // Refetch when season or drivers change
-  useEffect(() => {
-    if (selectedDriverIds.length >= 2) {
-      refetchComparison();
-    }
-  }, [selectedSeason, selectedDriverIds, refetchComparison]);
+  const availableDrivers = drivers.filter(d => !selectedDriverNames.includes(d.driver_name));
 
-  const drivers = driversData?.drivers || [];
-  const hasValidSelection = selectedDriverIds.length >= 2;
+  const addDriver = (name: string) => {
+    if (name && selectedDriverNames.length < 4 && !selectedDriverNames.includes(name)) {
+      setSelectedDriverNames(prev => [...prev, name]);
+    }
+  };
+
+  const removeDriver = (name: string) => {
+    setSelectedDriverNames(prev => prev.filter(n => n !== name));
+  };
+
+  const maxWins = Math.max(...selectedDrivers.map(d => d.wins), 1);
+  const maxPodiums = Math.max(...selectedDrivers.map(d => d.podiums), 1);
+  const maxPoints = Math.max(...selectedDrivers.map(d => d.points), 1);
+
+  const accentColors = ['#E10600', '#00D4FF', '#22C55E', '#A855F7'];
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 bg-white rounded-xl border border-neutral-200 shadow-lg">
-        <div>
-          <h1 className="text-3xl font-bold text-neutral-900">
-            Compare Drivers
-          </h1>
-          <p className="text-lg text-neutral-600 mt-1">
-            Select drivers below to view detailed comparison
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <label className="text-sm font-bold text-neutral-800">Season:</label>
-          <Select
-            value={String(selectedSeason)}
-            onChange={(e) =>
-              setSelectedSeason(
-                e.target.value === "All" ? "All" : parseInt(e.target.value),
-              )
-            }
-            className="w-40"
-          >
-            <option value="All">All Seasons</option>
-            <option value="2024">2024</option>
-            <option value="2023">2023</option>
-            <option value="2022">2022</option>
-            <option value="2021">2021</option>
-            <option value="2020">2020</option>
-          </Select>
-        </div>
-      </div>
+      <PageHero
+        title="Driver Comparison"
+        subtitle="Compare up to four drivers side by side"
+        badge="Head to Head"
+        imageSrc="/images/f1/f1-race-start.jpg"
+        imageAlt="F1 race start"
+      />
 
-      {/* Info Alert */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
-        <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-        <div>
-          <h3 className="text-sm font-semibold text-blue-900 mb-1">
-            How to Compare
-          </h3>
-          <p className="text-sm text-blue-700">
-            Select 2-4 drivers from the dropdown below. The comparison will display
-            <strong className="font-semibold"> only your selected drivers</strong> in a detailed grid
-            showing 50+ comprehensive metrics organized by category.
-          </p>
-        </div>
-      </div>
-
-      {/* Driver Selection */}
-      <Card className="border-2 border-primary-200 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-primary-50 to-primary-100">
+      {/* Driver selector */}
+      <Card>
+        <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-primary-600" />
-            Select Drivers to Compare
+            <Users className="h-3.5 w-3.5 text-accent" />
+            Select Drivers
           </CardTitle>
-          <CardDescription>
-            Choose 2-4 drivers • Currently selected: <strong>{selectedDriverIds.length}</strong>
-          </CardDescription>
+          <CardDescription>Choose drivers to compare</CardDescription>
         </CardHeader>
-        <CardContent className="pt-6">
-          {driversLoading ? (
-            <Skeleton className="h-32 w-full" />
-          ) : (
-            <DriverSelector
-              drivers={drivers}
-              selectedDriverIds={selectedDriverIds}
-              onSelectionChange={setSelectedDriverIds}
-              maxDrivers={4}
-              minDrivers={2}
+        <CardContent>
+          <div className="flex gap-3 mb-4">
+            <SearchableSelect
+              placeholder="Add a driver..."
+              options={availableDrivers.map(d => ({
+                value: d.driver_name,
+                label: d.driver_name,
+                subtitle: `${d.wins} wins · ${d.races} races`,
+              }))}
+              onSelect={value => addDriver(String(value))}
+              disabled={selectedDriverNames.length >= 4}
+              className="flex-1"
             />
-          )}
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {selectedDrivers.map((d, i) => (
+              <div
+                key={d.driver_name}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-sm text-xs font-mono font-bold uppercase tracking-wider"
+                style={{ backgroundColor: `${accentColors[i]}18`, color: accentColors[i], border: `1px solid ${accentColors[i]}40` }}
+              >
+                <span>{d.driver_name}</span>
+                <button onClick={() => removeDriver(d.driver_name)} className="hover:opacity-75">
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ))}
+            {selectedDriverNames.length === 0 && (
+              <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>No drivers selected</p>
+            )}
+          </div>
         </CardContent>
       </Card>
 
-      {/* Comparison Results */}
-      {hasValidSelection && (
-        <>
-          {/* View Mode Toggle */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Grid3x3 className="h-5 w-5 text-neutral-500" />
-              <h2 className="text-lg font-bold text-neutral-900">
-                Comparison Results ({comparisonData?.length || 0} drivers)
-              </h2>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-neutral-600">View:</span>
-              <Button
-                variant={comparisonMode === 'cards' ? 'primary' : 'outline'}
-                size="sm"
-                onClick={() => setComparisonMode('cards')}
-              >
-                Cards
-              </Button>
-              <Button
-                variant={comparisonMode === 'table' ? 'primary' : 'outline'}
-                size="sm"
-                onClick={() => setComparisonMode('table')}
-                icon={<BarChart3 className="h-4 w-4" />}
-              >
-                Table
-              </Button>
-            </div>
+      {selectedDrivers.length > 0 && (
+        <div className="space-y-4">
+          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${Math.min(selectedDrivers.length, 4)} gap-4`}>
+            {selectedDrivers.map((d, i) => (
+              <Card key={d.driver_name}>
+                <div className="h-[3px]" style={{ background: `linear-gradient(90deg, ${accentColors[i]}, transparent)` }} />
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">{d.driver_name}</CardTitle>
+                  <CardDescription className="hud-label text-[0.55rem]">{d.driver_nationality} // {d.first_year}-{d.last_year}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <StatRow label="Wins" value={d.wins} max={maxWins} color={accentColors[i]} />
+                    <StatRow label="Podiums" value={d.podiums} max={maxPodiums} color={accentColors[i]} />
+                    <StatRow label="Points" value={Math.round(d.points)} max={maxPoints} color={accentColors[i]} />
+                    <div className="flex justify-between text-sm">
+                      <span className="hud-label text-[0.55rem]">Races</span>
+                      <span className="font-semibold font-mono">{d.races}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="hud-label text-[0.55rem]">Teams</span>
+                      <span className="font-semibold text-right max-w-[120px] truncate text-xs" title={d.constructors.join(', ')}>
+                        {d.constructors.join(', ')}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
-          {/* Comparison Display */}
           <Card>
             <CardHeader>
-              <CardTitle>Comparison Results</CardTitle>
-              <CardDescription>
-                {seasonParam
-                  ? `Statistics for ${seasonParam} season`
-                  : 'Career statistics across all seasons'}
-              </CardDescription>
+              <CardTitle>Head to Head</CardTitle>
             </CardHeader>
             <CardContent>
-              {comparisonLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {selectedDriverIds.map((id) => (
-                    <Skeleton key={id} className="h-96" />
-                  ))}
-                </div>
-              ) : comparisonData && comparisonData.length > 0 ? (
-                comparisonMode === 'cards' ? (
-                  <MultiDriverComparison driversData={comparisonData} />
-                ) : (
-                  <DriverComparisonTable driversData={comparisonData} />
-                )
-              ) : (
-                <EmptyState
-                  icon={Users}
-                  title="No comparison data available"
-                  description="Unable to load comparison data for the selected drivers"
-                />
-              )}
+              <table className="w-full text-sm">
+                <thead style={{ borderBottom: '1px solid var(--color-border)' }}>
+                  <tr>
+                    <th className="pb-2 text-left hud-label">Metric</th>
+                    {selectedDrivers.map((d, i) => (
+                      <th key={d.driver_name} className="pb-2 text-center">
+                        <span
+                          className="text-[0.6rem] px-2 py-0.5 rounded-sm font-mono font-bold uppercase tracking-wider"
+                          style={{ backgroundColor: `${accentColors[i]}18`, color: accentColors[i] }}
+                        >
+                          {d.driver_name.split(' ').pop()}
+                        </span>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { label: 'Wins', key: 'wins' as const },
+                    { label: 'Podiums', key: 'podiums' as const },
+                    { label: 'Points', key: 'points' as const },
+                    { label: 'Races', key: 'races' as const },
+                  ].map(row => {
+                    const vals = selectedDrivers.map(d => d[row.key]);
+                    const max = Math.max(...vals.map(v => Number(v)));
+                    return (
+                      <tr key={row.label} className="hover:bg-surface-3 transition-colors" style={{ borderBottom: '1px solid var(--color-border)' }}>
+                        <td className="py-2 hud-label">{row.label}</td>
+                        {selectedDrivers.map((d, i) => {
+                          const val = d[row.key];
+                          const isMax = Number(val) === max;
+                          return (
+                            <td key={d.driver_name} className="py-2 text-center font-semibold font-display" style={{ color: isMax ? '#E10600' : 'var(--color-text-primary)' }}>
+                              {row.key === 'points' ? Number(val).toFixed(0) : val}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </CardContent>
           </Card>
-        </>
+        </div>
       )}
+    </div>
+  );
+}
 
-      {/* Empty State */}
-      {!hasValidSelection && !driversLoading && (
-        <Card>
-          <CardContent className="py-16">
-            <EmptyState
-              icon={Users}
-              title="Select drivers to compare"
-              description="Choose at least 2 drivers from the selector above to view their comparison"
-            />
-          </CardContent>
-        </Card>
-      )}
+function StatRow({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
+  const pct = max > 0 ? Math.round((value / max) * 100) : 0;
+  return (
+    <div>
+      <div className="flex justify-between text-sm mb-1">
+        <span className="hud-label text-[0.55rem]">{label}</span>
+        <span className="font-bold font-display" style={{ color }}>{value}</span>
+      </div>
+      <div className="w-full rounded-sm h-1.5" style={{ backgroundColor: 'var(--color-surface-3)' }}>
+        <div className="h-1.5 rounded-sm transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
+      </div>
     </div>
   );
 }

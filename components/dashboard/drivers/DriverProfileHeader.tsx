@@ -7,7 +7,8 @@
 
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
-import type { Driver } from '@/lib/api'
+type DriverValue = string | number | boolean | null | undefined;
+interface Driver { id: number; driver_ref: string; first_name: string; last_name: string; full_name: string; code?: string; nationality: string; wins: number; podiums: number; championships: number; career_points: number; is_active: boolean; retired: boolean; current_team?: string; [key: string]: DriverValue }
 import { Trophy, Award, Flag, Calendar } from 'lucide-react'
 
 interface DriverProfileHeaderProps {
@@ -89,7 +90,7 @@ export function DriverProfileHeader({ driver }: DriverProfileHeaderProps) {
             <div className="flex justify-between">
               <span className="text-neutral-600">Date of Birth:</span>
               <span className="font-medium text-neutral-900">
-                {new Date(driver.dob).toLocaleDateString()}
+                {new Date(String(driver.dob)).toLocaleDateString()}
               </span>
             </div>
           )}

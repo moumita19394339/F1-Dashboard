@@ -15,7 +15,7 @@ import {
   Legend,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
-import type { CountryRaceCount } from '@/lib/api'
+interface CountryRaceCount { country: string; race_count: number }
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 

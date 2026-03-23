@@ -1,11 +1,6 @@
-/**
- * Wins Over Time Line Chart Component
- * Displays wins by team per season
- */
-
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -18,6 +13,7 @@ import {
   Filler,
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
+import { useTheme } from 'next-themes'
 import type { WinsOverTimeData } from '@/lib/api'
 
 ChartJS.register(
@@ -35,7 +31,6 @@ interface WinsOverTimeProps {
   data: WinsOverTimeData[]
 }
 
-// F1 team colors (matching sample dashboard)
 const teamColors: Record<string, string> = {
   'Red Bull Racing': '#3671C6',
   'Mercedes': '#27F4D2',
@@ -50,10 +45,25 @@ const teamColors: Record<string, string> = {
   'Racing Point': '#F58020',
 }
 
+function useChartTheme() {
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === 'dark'
+  return {
+    textColor: isDark ? '#71717A' : '#71717A',
+    gridColor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)',
+    tooltipBg: isDark ? '#0F0F12' : '#FFFFFF',
+    tooltipTitle: isDark ? '#EDEDEF' : '#09090B',
+    tooltipBorder: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
+    borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)',
+    fontFamily: "'JetBrains Mono', monospace",
+    resolvedTheme,
+  }
+}
+
 export function WinsOverTime({ data }: WinsOverTimeProps) {
-  // Process data for chart
+  const theme = useChartTheme()
+
   const { datasets, labels } = useMemo(() => {
-    // Group by team
     const teamMap = new Map<string, Map<number, number>>()
 
     data.forEach((item) => {
@@ -63,15 +73,12 @@ export function WinsOverTime({ data }: WinsOverTimeProps) {
       teamMap.get(item.team_name)!.set(item.season, item.wins)
     })
 
-    // Get all unique seasons
     const seasons = new Set<number>()
     data.forEach((item) => seasons.add(item.season))
     const sortedSeasons = Array.from(seasons).sort()
 
-    // Create datasets for each team
     const chartDatasets = Array.from(teamMap.entries())
       .filter(([_, seasonData]) => {
-        // Only include teams with significant wins
         const totalWins = Array.from(seasonData.values()).reduce((sum, wins) => sum + wins, 0)
         return totalWins > 0
       })
@@ -80,32 +87,31 @@ export function WinsOverTime({ data }: WinsOverTimeProps) {
         return {
           label: teamName,
           data: teamData,
-          borderColor: teamColors[teamName] || '#888888',
-          backgroundColor: `${teamColors[teamName] || '#888888'}20`,
-          tension: 0.3,
+          borderColor: teamColors[teamName] || '#71717A',
+          backgroundColor: `${teamColors[teamName] || '#71717A'}15`,
+          tension: 0.4,
           fill: true,
           pointRadius: 4,
-          pointHoverRadius: 6,
+          pointHoverRadius: 7,
+          pointBackgroundColor: teamColors[teamName] || '#71717A',
+          pointBorderColor: 'transparent',
+          pointHoverBorderColor: '#FFFFFF',
+          pointHoverBorderWidth: 2,
+          borderWidth: 2,
         }
       })
       .sort((a, b) => {
-        // Sort by total wins
         const aTotal = a.data.reduce((sum, wins) => sum + wins, 0)
         const bTotal = b.data.reduce((sum, wins) => sum + wins, 0)
         return bTotal - aTotal
       })
-      .slice(0, 5) // Top 5 teams
+      .slice(0, 5)
 
     return {
       datasets: chartDatasets,
       labels: sortedSeasons.map(String),
     }
   }, [data])
-
-  const chartData = {
-    labels,
-    datasets,
-  }
 
   const options = {
     responsive: true,
@@ -118,65 +124,44 @@ export function WinsOverTime({ data }: WinsOverTimeProps) {
       legend: {
         position: 'top' as const,
         labels: {
-          color: '#333333',
-          font: {
-            size: 12,
-          },
+          color: theme.textColor,
+          font: { size: 10, family: theme.fontFamily },
           usePointStyle: true,
+          pointStyleWidth: 8,
+          padding: 16,
         },
       },
-      title: {
-        display: true,
-        text: 'Wins Over Time',
-        color: '#333333',
-        font: {
-          size: 16,
-          weight: 'bold' as const,
-        },
-      },
+      title: { display: false },
       tooltip: {
-        backgroundColor: '#FFFFFF',
-        titleColor: '#333333',
-        bodyColor: '#333333',
-        borderColor: '#E60000',
-        borderWidth: 2,
+        backgroundColor: theme.tooltipBg,
+        titleColor: theme.tooltipTitle,
+        bodyColor: theme.textColor,
+        borderColor: theme.tooltipBorder,
+        borderWidth: 1,
+        padding: 12,
+        titleFont: { family: theme.fontFamily, size: 10 },
+        bodyFont: { family: theme.fontFamily, size: 10 },
+        cornerRadius: 3,
       },
     },
     scales: {
       x: {
-        title: {
-          display: true,
-          text: 'Season',
-          color: '#666666',
-        },
-        ticks: {
-          color: '#666666',
-        },
-        grid: {
-          color: '#E5E7EB',
-        },
+        ticks: { color: theme.textColor, font: { family: theme.fontFamily, size: 10 } },
+        grid: { color: theme.gridColor },
+        border: { color: theme.borderColor },
       },
       y: {
-        title: {
-          display: true,
-          text: 'Total Wins',
-          color: '#666666',
-        },
-        ticks: {
-          color: '#666666',
-          stepSize: 2,
-        },
-        grid: {
-          color: '#E5E7EB',
-        },
+        ticks: { color: theme.textColor, stepSize: 2, font: { family: theme.fontFamily, size: 10 } },
+        grid: { color: theme.gridColor },
+        border: { color: theme.borderColor },
         min: 0,
       },
     },
   }
 
   return (
-    <div className="card p-6 h-96">
-      <Line data={chartData} options={options} />
+    <div className="h-80">
+      <Line key={theme.resolvedTheme} data={{ labels, datasets }} options={options} />
     </div>
   )
 }

@@ -5,7 +5,8 @@
 
 'use client'
 
-import type { DriverComparisonData } from '@/lib/api'
+type DriverValue = string | number | boolean | null | undefined;
+interface DriverComparisonData { driver_id: number; driver_name: string; driver_code?: string; team?: string; wins: number; podiums: number; championships: number; career_points: number; pole_positions: number; fastest_laps: number; years_active?: number; [key: string]: DriverValue }
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Trophy, Medal, Target, Zap, Award, Calendar } from 'lucide-react'
 
@@ -95,7 +96,7 @@ export function DriverComparison({ drivers }: DriverComparisonProps) {
             {stats.map((stat) => {
               const Icon = stat.icon
               const value = driver1[stat.key as keyof DriverComparisonData]
-              const displayValue = stat.format ? stat.format(Number(value)) : value
+              const displayValue = stat.format ? stat.format(Number(value)) : (value ?? '—')
 
               return (
                 <div key={stat.label} className="flex items-center justify-between">
@@ -165,7 +166,7 @@ export function DriverComparison({ drivers }: DriverComparisonProps) {
             {stats.map((stat) => {
               const Icon = stat.icon
               const value = driver2[stat.key as keyof DriverComparisonData]
-              const displayValue = stat.format ? stat.format(Number(value)) : value
+              const displayValue = stat.format ? stat.format(Number(value)) : (value ?? '—')
 
               return (
                 <div key={stat.label} className="flex items-center justify-between">

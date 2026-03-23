@@ -6,7 +6,7 @@ import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResp
 import Cookies from 'js-cookie'
 import type { ApiError } from './types'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 const TOKEN_COOKIE_NAME = 'auth_token'
 
 class ApiClient {
@@ -141,7 +141,8 @@ class ApiClient {
    * POST request
    */
   async post<T>(url: string, data?: unknown): Promise<T> {
-    const response = await this.client.post<T>(url, data)
+    const config = data instanceof FormData ? { headers: { 'Content-Type': undefined } } : {}
+    const response = await this.client.post<T>(url, data, config)
     return response.data
   }
 
@@ -149,7 +150,8 @@ class ApiClient {
    * PUT request
    */
   async put<T>(url: string, data?: unknown): Promise<T> {
-    const response = await this.client.put<T>(url, data)
+    const config = data instanceof FormData ? { headers: { 'Content-Type': undefined } } : {}
+    const response = await this.client.put<T>(url, data, config)
     return response.data
   }
 

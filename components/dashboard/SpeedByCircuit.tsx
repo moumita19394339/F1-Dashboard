@@ -15,7 +15,7 @@ import {
   Legend,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
-import type { SpeedByCircuitData } from '@/lib/api'
+interface SpeedByCircuitData { circuit_name: string; team_name: string; team_color: string; average_speed: number }
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 

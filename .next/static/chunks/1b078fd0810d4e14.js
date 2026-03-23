@@ -1,0 +1,1 @@
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,10036,17722,86533,33112,16494,78702,74835,96762,64583,38929,45006,o=>{"use strict";o.i(43476);let t=Error("Cannot find module 'chart.js'");throw t.code="MODULE_NOT_FOUND",t}]);

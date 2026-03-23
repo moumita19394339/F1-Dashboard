@@ -27,15 +27,17 @@ export default function DriversStatsLayout({
 }) {
   const pathname = usePathname()
 
-  // Don't show submenu on individual driver pages
   const isDriverDetailPage = pathname?.match(/\/admin\/drivers-stats\/\d+/)
 
   return (
     <div className="space-y-6">
-      {/* Submenu Navigation */}
       {!isDriverDetailPage && (
-        <div className="bg-white border border-neutral-200 rounded-lg shadow-sm overflow-hidden">
-          <div className="flex border-b border-neutral-200">
+        <div
+          className="rounded-md border overflow-hidden relative"
+          style={{ backgroundColor: 'var(--color-surface-1)', borderColor: 'var(--color-border)' }}
+        >
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#E10600] to-transparent" />
+          <div className="flex border-b" style={{ borderColor: 'var(--color-border)' }}>
             {submenuItems.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
@@ -47,14 +49,15 @@ export default function DriversStatsLayout({
                   className={cn(
                     'flex items-center gap-3 px-6 py-4 border-b-2 transition-all',
                     isActive
-                      ? 'border-f1-red bg-red-50 text-f1-red font-semibold'
-                      : 'border-transparent hover:bg-neutral-50 text-neutral-600 hover:text-neutral-900'
+                      ? 'border-accent bg-[rgba(225,6,0,0.06)] text-accent font-semibold'
+                      : 'border-transparent hover:bg-surface-3'
                   )}
+                  style={!isActive ? { color: 'var(--color-text-secondary)' } : undefined}
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-4 w-4" />
                   <div>
-                    <div className="text-sm font-medium">{item.title}</div>
-                    <div className="text-xs text-neutral-500">
+                    <div className="text-xs font-semibold uppercase tracking-wider">{item.title}</div>
+                    <div className="hud-label text-[0.5rem] mt-0.5">
                       {item.description}
                     </div>
                   </div>
@@ -65,7 +68,6 @@ export default function DriversStatsLayout({
         </div>
       )}
 
-      {/* Page Content */}
       {children}
     </div>
   )

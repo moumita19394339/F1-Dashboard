@@ -16,10 +16,11 @@
     "clsx": "^2.1.1",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.400.0",
-    "next": "^14.2.0",
-    "react": "^18.3.0",
+    "next": "^16.2.1",
+    "next-themes": "^0.4.6",
+    "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
-    "react-dom": "^18.3.0",
+    "react-dom": "^18.3.1",
     "tailwind-merge": "^3.4.1"
   },
   "devDependencies": {
@@ -33,9 +34,13 @@
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.0",
     "eslint": "^8.0.0",
+<<<<<<< HEAD
     "eslint-config-next": "^14.2.0",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
+=======
+    "eslint-config-next": "^16.2.1",
+>>>>>>> a0a751915a71199a3c1a8f5dd8d323c29b20d3b3
     "postcss": "^8.4.0",
     "tailwindcss": "^3.4.0",
     "ts-jest": "^29.4.6",
