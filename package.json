@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.0.0",
@@ -23,15 +24,27 @@
     "tailwind-merge": "^3.4.1"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/jest": "^30.0.0",
     "@types/js-cookie": "^3.0.6",
-    "@types/node": "^20.0.0",
+    "@types/node": "^20.19.37",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.0",
     "eslint": "^8.0.0",
+<<<<<<< HEAD
+    "eslint-config-next": "^14.2.0",
+    "jest": "^30.3.0",
+    "jest-environment-jsdom": "^30.3.0",
+=======
     "eslint-config-next": "^16.2.1",
+>>>>>>> a0a751915a71199a3c1a8f5dd8d323c29b20d3b3
     "postcss": "^8.4.0",
     "tailwindcss": "^3.4.0",
-    "typescript": "^5.0.0"
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }
