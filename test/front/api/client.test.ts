@@ -104,8 +104,9 @@ describe('apiClient', () => {
     const result = requestSuccessHandler(config)
 
     expect(result.headers.Authorization).toBeUndefined()
-  })
 
+  })
+  //edge case scenario testing. 
   test('request interceptor returns config unchanged when headers are missing', () => {
     CookiesMock.get.mockReturnValue('abc123')
 

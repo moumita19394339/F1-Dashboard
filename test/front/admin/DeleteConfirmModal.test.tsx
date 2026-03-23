@@ -51,15 +51,9 @@ describe('DeleteConfirmModal', () => {
   })
 
   test('calls onCancel when backdrop is clicked', () => {
-    const { container } = render(<DeleteConfirmModal {...defaultProps} />)
+    render(<DeleteConfirmModal {...defaultProps} />)
 
-    const backdrop = container.querySelector('.absolute.inset-0')
-    expect(backdrop).toBeInTheDocument()
-
-    if (backdrop) {
-      fireEvent.click(backdrop)
-    }
-
+    fireEvent.click(screen.getByTestId('modal-backdrop'))
     expect(defaultProps.onCancel).toHaveBeenCalledTimes(1)
   })
 

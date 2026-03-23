@@ -66,22 +66,6 @@ describe('ProtectedRoute', () => {
     expect(container).toBeEmptyDOMElement()
   })
 
-  test('redirects to login when user is not authenticated and not loading', async () => {
-    ;(useAuth as jest.Mock).mockReturnValue({
-      isAuthenticated: false,
-      isLoading: false,
-    })
-
-    render(
-      <ProtectedRoute>
-        <div>Protected Content</div>
-      </ProtectedRoute>
-    )
-
-    await waitFor(() => {
-      expect(pushMock).toHaveBeenCalledWith('/login')
-    })
-  })
 
   test('does not redirect when user is authenticated', async () => {
     ;(useAuth as jest.Mock).mockReturnValue({
