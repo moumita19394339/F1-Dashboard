@@ -22,6 +22,7 @@ def driver_aggregation(filtered_df):
         .reset_index()
     )
 
-    summary["avg_finish_position"] = summary["avg_finish_position"].round(2)
+    if not summary.empty:
+        summary["avg_finish_position"] = summary["avg_finish_position"].round(2)
 
     return summary
