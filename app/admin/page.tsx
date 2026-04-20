@@ -1,3 +1,15 @@
+/**
+ * Admin Dashboard Page
+ *
+ * The main landing page for the /admin route. Displays a high-level overview
+ * of F1 Constructor Championship data including:
+ *   - Key performance metrics (total wins, podiums, avg points, total races)
+ *   - Wins Over Time chart (constructor performance trends by season)
+ *   - Wins by Team chart (total race wins per constructor)
+ *   - Season Summary panel with breakdown stats
+ *
+ * Users can filter all data by selecting a specific season or viewing "All Seasons".
+ */
 "use client";
 
 import { useState } from "react";
